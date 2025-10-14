@@ -1,3 +1,4 @@
+import { ProductTypes } from "../data/Types";
 import { Locator, Page } from "@playwright/test";
 
 export class StartPage {
@@ -30,7 +31,7 @@ export class StartPage {
         await this.buySunscreensButton.click();
     }
 
-    async selectProductBasedOnTemperature(): Promise<void> {
+    async selectProductBasedOnTemperature(): Promise<ProductTypes> {
         const temperatureText = await this.getTemperature();
         const temperatureMatch = temperatureText.match(/(-?\d+)/);
         const temperature = temperatureMatch ? parseInt(temperatureMatch[0], 10) : 0;
@@ -38,13 +39,16 @@ export class StartPage {
         if (temperature < 19) {
             console.log(`Temperature is ${temperature}°C - Shopping for moisturizers`);
             await this.clickBuyMoisturizers();
+            return "moisturizers";
         } else if (temperature > 34) {
             console.log(`Temperature is ${temperature}°C - Shopping for sunscreens`);
             await this.clickBuySunscreens();
+            return "sunscreens";
         } else {
             console.log(
                 `Temperature is ${temperature}°C - Neither moisturizers nor sunscreens needed (temperature is between 19-34°C)`,
             );
+            return "none";
         }
     }
 }
