@@ -1,10 +1,10 @@
 import { Locator, Page } from "@playwright/test";
 
 export class StartPage {
-    readonly page: Page;
-    readonly temperatureContainer: Locator;
-    readonly buyMoisturizersButton: Locator;
-    readonly buySunscreensButton: Locator;
+    protected page: Page;
+    private temperatureContainer: Locator;
+    private buyMoisturizersButton: Locator;
+    private buySunscreensButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -35,6 +35,16 @@ export class StartPage {
         const temperatureMatch = temperatureText.match(/(-?\d+)/);
         const temperature = temperatureMatch ? parseInt(temperatureMatch[0], 10) : 0;
 
-        temperature < 19 ? await this.clickBuyMoisturizers() : await this.clickBuySunscreens();
+        if (temperature < 19) {
+            console.log(`Temperature is ${temperature}°C - Shopping for moisturizers`);
+            await this.clickBuyMoisturizers();
+        } else if (temperature > 34) {
+            console.log(`Temperature is ${temperature}°C - Shopping for sunscreens`);
+            await this.clickBuySunscreens();
+        } else {
+            console.log(
+                `Temperature is ${temperature}°C - Neither moisturizers nor sunscreens needed (temperature is between 19-34°C)`,
+            );
+        }
     }
 }
