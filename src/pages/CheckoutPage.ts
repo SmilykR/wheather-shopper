@@ -1,3 +1,4 @@
+import { CheckoutPageAssertions } from "@/asserts/CheckoutPage.asserts";
 import { CartItem } from "@/data/Types";
 import { FrameLocator, Locator, Page, expect } from "@playwright/test";
 
@@ -12,6 +13,8 @@ export class CheckoutPage {
     private expiryDateInput: Locator;
     private cvcInput: Locator;
     private zipCodeInput: Locator;
+    readonly successfulPaymentMessage: Locator;
+    public assert: CheckoutPageAssertions;
 
     constructor(page: Page) {
         this.page = page;
@@ -25,6 +28,9 @@ export class CheckoutPage {
         this.expiryDateInput = this.stripeFrame.locator("input[placeholder*='MM']");
         this.cvcInput = this.stripeFrame.locator("input[placeholder*='CVC']");
         this.zipCodeInput = this.stripeFrame.locator("input[placeholder*='ZIP']");
+        this.successfulPaymentMessage = this.page.locator("h2:has-text('PAYMENT SUCCESS')");
+
+        this.assert = new CheckoutPageAssertions(this);
     }
 
     async open(): Promise<void> {
@@ -76,32 +82,6 @@ export class CheckoutPage {
         return parseInt(totalMatch![0], 10);
     }
 
-    async verifyCartContents(): Promise<{ items: CartItem[]; total: number; isValid: boolean }> {
-        console.log("=== Verifying Cart Contents ===");
-
-        const items = await this.getCartItems();
-        const displayedTotal = await this.getTotalAmount();
-        const calculatedTotal = items.reduce((sum, item) => sum + item.price, 0);
-
-        const isValid = displayedTotal === calculatedTotal;
-
-        console.log(`Cart Items (${items.length}):`);
-        items.forEach((item, index) => {
-            console.log(`  ${index + 1}. ${item.name} - Rs. ${item.price}`);
-        });
-
-        // Use Playwright assertion for cart validation
-        expect(displayedTotal, `Cart total mismatch. Expected: ${calculatedTotal}, Got: ${displayedTotal}`).toBe(
-            calculatedTotal,
-        );
-
-        return {
-            items,
-            total: displayedTotal,
-            isValid,
-        };
-    }
-
     async clickPayWithCard(): Promise<void> {
         console.log("Initiating payment process...");
         await this.payWithCardButton.click();
@@ -114,30 +94,19 @@ export class CheckoutPage {
         cvc: string;
         zipCode: string;
     }): Promise<void> {
-        try {
-            await expect(this.page.locator("iframe[name^='stripe_checkout_app']")).toBeVisible({ timeout: 10000 });
-            await this.emailInput.fill(paymentDetails.email);
-            await this.cardNumberInput.fill(paymentDetails.cardNumber);
-            await this.expiryDateInput.fill(paymentDetails.expiryDate);
-            await this.cvcInput.fill(paymentDetails.cvc);
-            await this.zipCodeInput.fill(paymentDetails.zipCode);
-        } catch (error) {
-            console.log("Note: Payment form interaction may require manual testing due to Stripe security");
-            console.log("Test card details:", paymentDetails);
-        }
+        await expect(this.page.locator("iframe[name^='stripe_checkout_app']")).toBeVisible({ timeout: 10000 });
+        await this.emailInput.pressSequentially(paymentDetails.email, { delay: 100 });
+        await this.cardNumberInput.pressSequentially(paymentDetails.cardNumber, { delay: 100 });
+        await this.expiryDateInput.pressSequentially(paymentDetails.expiryDate, { delay: 100 });
+        await this.cvcInput.pressSequentially(paymentDetails.cvc, { delay: 100 });
+        await this.zipCodeInput.pressSequentially(paymentDetails.zipCode, { delay: 100 });
     }
 
     async submitPayment(): Promise<void> {
         console.log("Submitting payment...");
-        try {
-            const submitButton = this.stripeFrame.locator("#submitButton");
-            await submitButton.click();
-            await this.page.waitForLoadState("networkidle", { timeout: 15000 });
-            console.log("Payment submitted successfully");
-        } catch (error) {
-            console.log("Payment submission may have encountered the designed 5% error rate");
-            console.log("This is expected behavior according to the task requirements");
-        }
+        const submitButton = this.stripeFrame.locator("#submitButton");
+        await submitButton.click();
+        console.log("Payment submitted successfully");
     }
 
     async completeCheckoutProcess(paymentDetails: {
@@ -146,19 +115,11 @@ export class CheckoutPage {
         expiryDate: string;
         cvc: string;
         zipCode: string;
-    }): Promise<{ cartValid: boolean; paymentAttempted: boolean }> {
+    }): Promise<void> {
         console.log("=== Starting Checkout Process ===");
-
-        const cartVerification = await this.verifyCartContents();
         await this.clickPayWithCard();
         await this.fillPaymentDetails(paymentDetails);
         await this.submitPayment();
-
         console.log("=== Checkout Process Completed ===");
-
-        return {
-            cartValid: cartVerification.isValid,
-            paymentAttempted: true,
-        };
     }
 }

@@ -39,10 +39,12 @@ export class StartPage {
         if (temperature < 19) {
             console.log(`Temperature is ${temperature}°C - Shopping for moisturizers`);
             await this.clickBuyMoisturizers();
+            await this.page.waitForLoadState("networkidle");
             return "moisturizers";
         } else if (temperature > 34) {
             console.log(`Temperature is ${temperature}°C - Shopping for sunscreens`);
             await this.clickBuySunscreens();
+            await this.page.waitForLoadState("networkidle");
             return "sunscreens";
         } else {
             console.log(

@@ -27,7 +27,11 @@ test.describe("Temperature-based Product Selection", () => {
 
         await test.step("Complete checkout process", async () => {
             if (selectedResource !== "none") {
+                const expectedCriteria =
+                    selectedResource === "moisturizers" ? ui.MOISTURIZER_CRITERIA : ui.SUNSCREEN_CRITERIA;
+                await pages.checkoutPage.assert.cartContents(expectedCriteria);
                 await pages.checkoutPage.completeCheckoutProcess(ui.PAYMENT_DETAILS);
+                await pages.checkoutPage.assert.paymentIsSuccess();
             }
         });
     });
