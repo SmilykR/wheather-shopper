@@ -1,13 +1,34 @@
 import { test } from "../fixtures/customFixtures";
+import * as ui from "../data/ui-data/tempRelatedBuy";
 
 test.describe("Temperature-based Product Selection", () => {
     test.beforeEach(async ({ pages }) => {
         await pages.startPage.open();
     });
 
-    test("E2E Shopping Test", { tag: ["@reg"] }, async ({ pages }) => {
+    test("E2E Shopping Test", { tag: ["@reg"] }, async ({ pages, actions }) => {
+        let selectedResource: string;
+
         await test.step("Navigate to the web and select product", async () => {
-            await pages.startPage.selectProductBasedOnTemperature();
+            selectedResource = await pages.startPage.selectProductBasedOnTemperature();
+        });
+
+        await test.step("Complete product selection based on temperature", async () => {
+            if (selectedResource === "moisturizers") {
+                await actions.baseProductActions.selectProductsByCriteria(ui.MOISTURIZER_CRITERIA);
+                await actions.baseProductActions.goToCart();
+            } else if (selectedResource === "sunscreens") {
+                await actions.baseProductActions.selectProductsByCriteria(ui.SUNSCREEN_CRITERIA);
+                await actions.baseProductActions.goToCart();
+            } else {
+                return;
+            }
+        });
+
+        await test.step("Complete checkout process", async () => {
+            if (selectedResource !== "none") {
+                await pages.checkoutPage.completeCheckoutProcess(ui.PAYMENT_DETAILS);
+            }
         });
     });
 });
