@@ -1,79 +1,48 @@
-import { defineConfig, devices } from '@playwright/test';
+import { PlaywrightTestConfig } from "@playwright/test";
+import dotenv from "dotenv";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config();
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
-export default defineConfig({
-  testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+const minutesToMs = (minutes: number): number => minutes * 60 * 1000;
+
+const getEnvNumber = (envVar: string, defaultValue: number): number => {
+  return parseInt(process.env[envVar] || defaultValue.toString(), 10);
+};
+
+const config: PlaywrightTestConfig = {
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    browserName: "chromium",
+    headless: true,
+    trace: "retain-on-failure",
+    launchOptions: {
+      args: ["--start-maximized"],
+      headless: true,
+      timeout: minutesToMs(getEnvNumber("BROWSER_LAUNCH_TIMEOUT", 2)),
+      slowMo: 100,
+      downloadsPath: "./test-results/downloads",
+    },
+    viewport: { height: 937, width: 1920 },
+    ignoreHTTPSErrors: true,
+    acceptDownloads: true,
+    actionTimeout: minutesToMs(getEnvNumber("ACTION_TIMEOUT", 2)),
+    navigationTimeout: minutesToMs(getEnvNumber("NAVIGATION_TIMEOUT", 5)),
+    screenshot: "only-on-failure",
+    video: {
+      mode: "retain-on-failure",
+      size: { height: 937, width: 1920 },
+    },
   },
-
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+  testDir: "./scr/tests",
+  outputDir: "../../test-results/",
+  retries: getEnvNumber("RETRIES", 0),
+  preserveOutput: "failures-only",
+  reportSlowTests: null,
+  timeout: minutesToMs(getEnvNumber("TEST_TIMEOUT", 50)),
+  workers: getEnvNumber("PARALLEL_THREAD", 1),
+  reporter: [
+    ["html", { outputFolder: "./test-results/html", open: "never" }],
+    ["dot"],
+    ["list"],
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
-});
+};
+export default config;
