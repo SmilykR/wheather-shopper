@@ -35,15 +35,11 @@ The application implements smart product selection based on real-time weather co
 
 ## 🏗️ Architecture & Design Patterns
 
-### Page Object Model (POM)
-- **Separation of Concerns:** UI elements separate from business logic
-- **Reusable Components:** Centralized locator management
+### Page Object Model (POM) with Integrated Business Logic
+- **Consolidated Architecture:** All product logic integrated into page classes
+- **Separation of Concerns:** UI elements and business logic in dedicated page classes
+- **Reusable Components:** Centralized locator management and smart product selection
 - **Maintainable Code:** Easy updates when UI changes
-
-### Action-Based Architecture
-- **Business Logic Layer:** Dedicated action classes for complex operations
-- **Data-Driven Testing:** Centralized criteria management
-- **Scalable Design:** Easy to extend for new product categories
 
 ## 🛠 Technology Stack
 
@@ -58,27 +54,25 @@ The application implements smart product selection based on real-time weather co
 ```
 wheather-shopper/
 ├── src/
-│   ├── actions/
-│   │   ├── api-actions/           # API interaction layer
-│   │   └── ui-actions/            # UI business logic
-│   │       └── BaseProductActions.ts  # Unified product selection
+│   ├── asserts/
+│   │   └── CheckoutPage.asserts.ts   # Validation and assertion logic
 │   ├── data/
-│   │   ├── Types.ts               # TypeScript type definitions
-│   │   └── ui-data/               # Test data management
-│   │       └── tempRelatedBuy.ts  # Product selection criteria
+│   │   ├── Types.ts                  # TypeScript type definitions
+│   │   └── ui-data/                  # Test data management
+│   │       └── tempRelatedBuy.ts     # Product selection criteria
 │   ├── fixtures/
-│   │   └── customFixtures.ts      # Playwright custom fixtures
+│   │   └── customFixtures.ts         # Playwright custom fixtures
 │   ├── pages/
-│   │   ├── StartPage.ts           # Weather detection & navigation
-│   │   ├── ProductPage.ts         # Product browsing & selection
-│   │   └── CheckoutPage.ts        # Cart verification & payment
+│   │   ├── StartPage.ts              # Weather detection & navigation
+│   │   ├── ProductPage.ts            # Product browsing, selection & business logic
+│   │   └── CheckoutPage.ts           # Cart verification & payment
 │   └── tests/
-│       └── tempRelatedBuy.spec.ts # Main E2E test suite
-├── playwright.config.ts           # Playwright configuration
-├── package.json                   # Dependencies & scripts
-├── tsconfig.json                  # TypeScript configuration
-├── .prettierrc.json              # Code formatting rules
-└── .env                          # Environment variables
+│       └── tempRelatedBuy.spec.ts    # Main E2E test suite
+├── playwright.config.ts              # Playwright configuration
+├── package.json                      # Dependencies & scripts
+├── tsconfig.json                     # TypeScript configuration
+├── .prettierrc.json                 # Code formatting rules
+└── .env                             # Environment variables
 ```
 
 ## 🚀 Getting Started
@@ -151,8 +145,9 @@ npm run quality
 
 ### Dynamic Test Data Management
 - **Centralized Criteria:** Product selection rules in dedicated data files
-- **Configurable Strategies:** min/max/target price selection algorithms
+- **Configurable Strategies:** min/max/target price selection algorithms integrated in ProductPage
 - **Type-Safe Data:** Full TypeScript support for test data
+- **Assertion-Based Validation:** Dedicated assertion classes for reliable test validation
 
 ### Robust Error Handling
 - **Playwright Assertions:** Built-in expect API for reliable validations
@@ -197,10 +192,11 @@ TIMEOUT_LONG=30000
 ## 🎯 Key Achievements
 
 ### Technical Excellence
-- ✅ **Zero Code Duplication:** Unified BaseProductActions class
+- ✅ **Simplified Architecture:** All product logic consolidated in ProductPage class
 - ✅ **Type Safety:** Full TypeScript implementation
 - ✅ **Playwright Best Practices:** Expect API, proper waits, assertions
-- ✅ **Maintainable Architecture:** Page Object Model with action layers
+- ✅ **Maintainable Architecture:** Page Object Model with integrated business logic
+- ✅ **Assertion Pattern:** Dedicated assertion classes for validation logic
 
 ### Test Coverage
 - ✅ **Temperature Detection:** Real-time weather-based navigation
