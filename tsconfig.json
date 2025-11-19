@@ -29,7 +29,9 @@
       "@/*": ["src/*"],
       "@pages/*": ["src/pages/*"],
       "@utils/*": ["src/utils/*"],
-      "@tests/*": ["tests/*"]
+      "@tests/*": ["tests/*"],
+      "@logger/*": ["src/logger/*"],
+      "@data/*": ["src/data/*"]
     }
   },
   "include": [

@@ -1,9 +1,9 @@
 import { CheckoutPageAssertions } from "@/asserts/CheckoutPage.asserts";
 import { CartItem } from "@/data/Types";
+import { BasePage } from "@/pages/BasePage";
 import { FrameLocator, Locator, Page, expect } from "@playwright/test";
 
-export class CheckoutPage {
-    protected page: Page;
+export class CheckoutPage extends BasePage {
     private cartItems: Locator;
     private totalAmount: Locator;
     private payWithCardButton: Locator;
@@ -17,7 +17,7 @@ export class CheckoutPage {
     public assert: CheckoutPageAssertions;
 
     constructor(page: Page) {
-        this.page = page;
+        super(page);
 
         this.cartItems = this.page.locator("table.table-striped tbody tr");
         this.totalAmount = this.page.locator("#total");
@@ -33,8 +33,13 @@ export class CheckoutPage {
         this.assert = new CheckoutPageAssertions(this);
     }
 
+    public getPage(): Page {
+        return this.page;
+    }
+
     async open(): Promise<void> {
         await this.page.goto(`${process.env["BASE_URL"]}/cart`);
+        await this.page.waitForLoadState("domcontentloaded");
     }
 
     async getCartItems(): Promise<CartItem[]> {

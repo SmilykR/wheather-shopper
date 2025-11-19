@@ -1,11 +1,13 @@
 import { CheckoutPage } from "@/pages/CheckoutPage";
 import { ProductSelectionCriteria } from "@/data/Types";
 import { expect } from "@playwright/test";
+import { BaseAsserts } from "@/asserts/Base.asserts";
 
-export class CheckoutPageAssertions {
+export class CheckoutPageAssertions extends BaseAsserts {
     private readonly checkoutPage: CheckoutPage;
 
     constructor(checkoutPage: CheckoutPage) {
+        super(checkoutPage.getPage());
         this.checkoutPage = checkoutPage;
     }
 
