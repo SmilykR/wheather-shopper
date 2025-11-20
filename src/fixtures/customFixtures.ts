@@ -1,24 +1,34 @@
-import { StartPage } from "../pages/StartPage";
-import { ProductPage } from "../pages/ProductPage";
-import { CheckoutPage } from "../pages/CheckoutPage";
+import { ExamplePageAPI } from "@/actions/api-actions/individualPageCalls/examplePageAPI";
+import { ExamplePage } from "../pages/ExamplePage";
 import { test as base } from "@playwright/test";
 
 type Fixtures = {
     pages: {
-        startPage: StartPage;
-        productPage: ProductPage;
-        checkoutPage: CheckoutPage;
+        examplePage: ExamplePage;
+    };
+
+    requests: {
+        examplePageAPI: ExamplePageAPI;
     };
 };
 
 export const test = base.extend<Fixtures>({
     pages: async ({ page }, use) => {
         const pages = {
-            startPage: new StartPage(page),
-            productPage: new ProductPage(page),
-            checkoutPage: new CheckoutPage(page),
+            examplePage: new ExamplePage(page),
         };
 
         await use(pages);
+    },
+
+    requests: async ({ request }, use) => {
+        // const tokenInfo = await fetchAccessToken(request, 'Acterys API');
+        // const token = tokenInfo.access_token || 'ADUMMYTOKEN';
+        const token = "ADUMMYTOKEN";
+        const requests = {
+            examplePageAPI: new ExamplePageAPI(request, token),
+        };
+
+        await use(requests);
     },
 });
