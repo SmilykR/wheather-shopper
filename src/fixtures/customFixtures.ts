@@ -1,4 +1,4 @@
-import { ExamplePageAPI } from "@/actions/api-actions/individualPageCalls/examplePageAPI";
+import { ExamplePageAPI } from "@/actions/api-actions/individualPageCalls/ExamplePageAPI";
 import { ExamplePage } from "../pages/ExamplePage";
 import { test as base } from "@playwright/test";
 

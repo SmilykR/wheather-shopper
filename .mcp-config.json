@@ -1,0 +1,49 @@
+{
+  "mcpSettings": {
+    "servers": {
+      "playwright-assistant": {
+        "command": "npx",
+        "args": ["@modelcontextprotocol/server-playwright"],
+        "env": {
+          "PLAYWRIGHT_STYLE_GUIDE_PATH": "./docs/playwright-style-guide.md",
+          "PROJECT_ROOT": ".",
+          "ENFORCE_PATTERNS": "true"
+        }
+      }
+    }
+  },
+  "codeGeneration": {
+    "templates": {
+      "pageObject": {
+        "extends": "BasePage",
+        "visibility": {
+          "page": "protected readonly",
+          "elements": "private",
+          "methods": "async",
+          "constructor": "super(page)"
+        }
+      },
+      "assertions": {
+        "extends": "BaseAsserts",
+        "constructor": "super(page)",
+        "methodPattern": "async assert*(): Promise<void>"
+      },
+      "tests": {
+        "structure": "test.describe > test.beforeEach > test with steps",
+        "fixtures": "{ pages, requests }",
+        "tags": "{ tag: ['@reg'] }"
+      }
+    }
+  },
+  "playwrightPatterns": {
+    "locatorStrategy": "page.locator()",
+    "environmentAccess": "process.env['VARIABLE']",
+    "waitStrategies": [
+      "waitForLoadState('domcontentloaded')",
+      "waitForTimeout()",
+      "waitForResponse()"
+    ],
+    "assertionLibrary": "expect() from @playwright/test",
+    "loggingFramework": "custom Logger class"
+  }
+}

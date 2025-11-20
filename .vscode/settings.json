@@ -1,0 +1,17 @@
+{
+  "playwright.codegen.useLocator": true,
+  "playwright.codegen.useDataTestId": false,
+  "playwright.codegen.useRole": true,
+  "playwright.codegen.useText": true,
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "mcp.styleGuide": "./docs/playwright-style-guide.md",
+  "mcp.templates": "./templates/",
+  "mcp.enforcePatterns": true,
+  "files.associations": {
+    "*.template.ts": "typescript"
+  },
+  "emmet.includeLanguages": {
+    "typescript": "html"
+  }
+}
